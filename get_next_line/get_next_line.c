@@ -98,10 +98,12 @@ int get_next_line(int fd, char **line)
 {
     static char *remains;
     int sizeofbuffer = 1;
-    char buffer[sizeofbuffer + 1];
+    char *buffer;
     int sizeofread = 1;
     if (!line)
         return (-1);
+	buffer = malloc(sizeof(char) * (sizeofbuffer + 1));
+
     while(buffer[0] != '\n' && sizeofread != 0)
     {
         if((sizeofread = read(fd, buffer, sizeofbuffer)) == (-1))
@@ -109,6 +111,8 @@ int get_next_line(int fd, char **line)
         buffer[sizeofread] = '\0';
         remains = ft_strjoin(remains, buffer);
     }
+	free(buffer);
+  //  printf("%s", remains);
     *line = ft_putline(remains);
     remains = ft_newremains(remains);
     return ((sizeofread == 0) ? 0 : 1);

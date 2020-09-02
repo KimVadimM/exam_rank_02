@@ -22,7 +22,7 @@ char    *ft_strjoin(char *remains, char *buffer)
     if (!remains && !buffer)
         return (NULL);
     size = ft_strlen(remains) + ft_strlen(buffer);
-    if (!(array = (char *)malloc(sizeof(char) * (size + 1))))
+    if (!(array = (char *)malloc(sizeof(char) * (size + 2))))
         return (NULL);
     i = 0;
     j = 0;
@@ -75,6 +75,7 @@ char    *cut_next_line(char *remains)
 
     i = 0;
     j = 0;
+	
     while (remains[i] && remains[i] != '\n')
         i++;
     if (!remains[i])
@@ -82,40 +83,46 @@ char    *cut_next_line(char *remains)
         free(remains);
         return (NULL);
     }
-    if (!(array = (char *)malloc(sizeof(char) * (ft_strlen(remains) - i + 1))))
+//	printf("%d", i);
+//	printf("%d", ft_strlen(remains));
+    	               
+  	if (!(array = (char *)malloc(sizeof(char) * ((ft_strlen(remains) - i) + 1))))
         return (NULL);
-    i++;
+   i++;  	
     while (remains[i])
     {
-        array[j] = remains[i];
+     	array[j] = remains[i];
         i++;
         j++;
     }
     array[j] = '\0';
-    free(remains);
+
+    free((void *)remains);	
     return (array);
+	
 }
 
-int get_next_line(char **line)
+int get_next_line(int fd, char **line)
 {
 	static char *remains;
 
 	int buffer_size = 1;	
-	char buffer [buffer_size + 1];
+	char *buffer;
 	int sizeofread;
-	int fd = 0;
+//	int fd = 0;
 	
 	sizeofread = 1;
 	if (!line)
 		return (-1);
-
+    buffer = malloc(sizeof(char) * (buffer_size +1));
 	while (buffer[0] != '\n' && sizeofread != 0)
 	{
 		if((sizeofread = read(fd, buffer, buffer_size)) == (-1))
 			return (-1);
 		buffer[sizeofread] = '\0';
 		remains = ft_strjoin(remains, buffer);
-	}		
+	}
+	free(buffer);	
 	*line = push_line(remains);
 	remains = cut_next_line(remains); 
 	return ((sizeofread == 0) ? 0 : 1);
